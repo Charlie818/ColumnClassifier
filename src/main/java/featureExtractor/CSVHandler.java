@@ -98,7 +98,28 @@ public class CSVHandler {
             e.printStackTrace();
         }
     }
+
+    public static ArrayList<String> loadDict(){
+        String filename="src/main/resources/WordsByFrequency.txt";
+        File file = new File(filename);
+        ArrayList<String> dict= new ArrayList<String>();
+        FileReader fReader = null;
+        try {
+            fReader = new FileReader(file);
+            BufferedReader bf = new BufferedReader(fReader);
+            String line=null;
+            while ((line=bf.readLine()) != null){
+                dict.add(line);
+//                System.out.println(line);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return dict;
+    }
+
     public static void main(String[] args) throws Exception {
-        textRegularization();
+//        textRegularization();
+        loadDict();
     }
 }

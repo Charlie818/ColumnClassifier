@@ -1,4 +1,5 @@
-package classifier; /**
+package classifier;
+/**
  * Created by qiujiarong on 26/12/2017.
  */
 import entity.Feature;
@@ -63,7 +64,7 @@ public class SVM {
         for(int i=0;i<length;i++){
             double result=svm.svm_predict(model, data[i]);
             if(result==labels[i])correct++;
-            System.out.println("predict "+result+" annotation "+labels[i]+" text "+features.get(i).getText());
+//            System.out.println("predict "+result+" annotation "+labels[i]+" text "+features.get(i).getText());
         }
         //预测测试数据的lable
         System.out.println(correct+" "+length);
