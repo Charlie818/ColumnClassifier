@@ -13,9 +13,9 @@ import static java.lang.Math.max;
  */
 public class FeatureHandler {
 
-    Map<String,Double> wordCost=new HashMap<String, Double>();
-    ArrayList<String> words= new ArrayList<String>();
-    int maxWordLength=0;
+    private Map<String,Double> wordCost;
+    ArrayList<String> words;
+    int maxWordLength;
 
     public FeatureHandler(){
         Map<String,Double> wordCost= new HashMap<String, Double>();
@@ -32,9 +32,9 @@ public class FeatureHandler {
 
     }
 
-    public TreeSet<String> featureExtractor() throws Exception{
+    public TreeSet featureExtractor(){
         ArrayList<Pair<String,Integer>> columns=CSVHandler.loadColumns();
-        TreeSet<String> features= new TreeSet<String>();
+        TreeSet features= new TreeSet();
         for(Pair<String,Integer> pair:columns){
             String column = pair.getKey();
             column=column.replaceAll("[A-Z]","_$0");

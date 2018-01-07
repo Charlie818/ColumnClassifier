@@ -6,9 +6,9 @@ import java.util.Vector;
  * Created by qiujiarong on 28/12/2017.
  */
 public class Feature {
-    Vector<Double> vec;
-    int label;
-    String text;
+    private Vector<Double> vec;
+    private int label;
+    private String text;
 
     public Feature(Vector<Double> vec, int label, String text) {
         this.vec = vec;
@@ -16,10 +16,6 @@ public class Feature {
         this.text = text;
     }
 
-    public Feature(Vector<Double> vec, int label) {
-        this.vec = vec;
-        this.label = label;
-    }
 
     public Vector<Double> getVec() {
         return vec;

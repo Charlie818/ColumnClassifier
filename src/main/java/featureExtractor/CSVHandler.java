@@ -40,16 +40,13 @@ public class CSVHandler {
     }
 
     public static ArrayList<Pair<String,Integer>> loadColumns(){
-        String filename="src/main/resources/ColumnName.csv";
-        File file = new File(filename);
-        FileReader fReader = null;
+        File file = new File("src/main/resources/ColumnName.csv");
         ArrayList<Pair<String,Integer>> columns= new ArrayList<Pair<String, Integer>>();
         try {
-            fReader = new FileReader(file);
-            CSVReader csvReader = new CSVReader(fReader);
+            CSVReader csvReader = new CSVReader(new FileReader(file));
             List<String[]> list = csvReader.readAll();
             for(String[] ss : list){
-                String column=ss[0];
+                String column= ss[0];
                 int label =Integer.parseInt(ss[1]);
                 columns.add(new Pair<String, Integer>(column,label));
             }
@@ -61,13 +58,10 @@ public class CSVHandler {
     }
 
     public static Map<String,Integer> loadFeatures(){
-        String filename="src/main/resources/Features.csv";
-        File file = new File(filename);
-        FileReader fReader = null;
+        File file = new File("src/main/resources/Features.csv");
         Map<String,Integer> feature2id = new HashMap<String, Integer>();
         try {
-            fReader = new FileReader(file);
-            CSVReader csvReader = new CSVReader(fReader);
+            CSVReader csvReader = new CSVReader(new FileReader(file));
             List<String[]> list = csvReader.readAll();
             for(String[] ss : list){
                 String feature=ss[0];
@@ -84,9 +78,8 @@ public class CSVHandler {
     public static void writeFeatures(Set<String> features){
         String filename="src/main/resources/Features.csv";
         File fw = new File(filename);
-        Writer writer = null;
         try {
-            writer = new FileWriter(fw);
+            Writer writer = new FileWriter(fw);
             CSVWriter csvWriter = new CSVWriter(writer, ',',CSVWriter.NO_QUOTE_CHARACTER);
             int idx=0;
             for(String s:features){
@@ -103,14 +96,13 @@ public class CSVHandler {
         String filename="src/main/resources/WordsByFrequency.txt";
         File file = new File(filename);
         ArrayList<String> dict= new ArrayList<String>();
-        FileReader fReader = null;
+        FileReader fReader;
         try {
             fReader = new FileReader(file);
             BufferedReader bf = new BufferedReader(fReader);
-            String line=null;
+            String line;
             while ((line=bf.readLine()) != null){
                 dict.add(line);
-//                System.out.println(line);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -118,7 +110,7 @@ public class CSVHandler {
         return dict;
     }
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
 //        textRegularization();
         loadDict();
     }

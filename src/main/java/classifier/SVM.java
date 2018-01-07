@@ -14,7 +14,7 @@ import java.util.Vector;
 
 public class SVM {
 
-    public static void SVM(Vector<Feature> features){
+    static void SVM(Vector<Feature> features){
         svm_node[][] data=new svm_node[features.size()][];
         double[] labels = new double[features.size()];
         int idx=0;
