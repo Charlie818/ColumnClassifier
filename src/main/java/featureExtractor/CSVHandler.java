@@ -39,6 +39,45 @@ public class CSVHandler {
         csvWriter.close();
     }
 
+    public static void trainTestSplit() throws Exception{
+        String filename="src/main/resources/PocketFindingsTaxonomy2.csv";
+        File file = new File(filename);
+        FileReader fReader = new FileReader(file);
+        CSVReader csvReader = new CSVReader(fReader);
+        List<String[]> list = csvReader.readAll();
+        ArrayList<Pair<String,Integer>> train = new ArrayList<Pair<String, Integer>>();
+        ArrayList<Pair<String,Integer>> test = new ArrayList<Pair<String, Integer>>();
+        int cnt=0;
+        for(String[] ss : list){
+            String packageName=ss[0];
+            String tableName=ss[1];
+            String columnName=ss[2];
+            int label=0;
+            try {
+                if(Integer.parseInt(ss[3])==1)
+                    label=1;
+            }catch (Exception e){
+
+            }
+
+            if(cnt%5==0)test.add(new Pair<String, Integer>(packageName+"_"+tableName+"_"+columnName,label));
+            else train.add(new Pair<String, Integer>(packageName+"_"+tableName+"_"+columnName,label));
+            cnt++;
+        }
+        csvReader.close();
+        String filename2="src/main/resources/ColumnName2.csv";
+        File fw = new File(filename2);
+        Writer writer = new FileWriter(fw);
+        CSVWriter csvWriter = new CSVWriter(writer, ',',CSVWriter.NO_QUOTE_CHARACTER);
+        for(Pair<String,Integer> pair:train){
+            csvWriter.writeNext(new String[]{pair.getKey(),pair.getValue().toString(),"0"});
+        }
+        for(Pair<String,Integer> pair:test){
+            csvWriter.writeNext(new String[]{pair.getKey(),pair.getValue().toString(),"1"});
+        }
+        csvWriter.close();
+    }
+
     public static ArrayList<Pair<String,Integer>> loadColumns(){
         String filename="src/main/resources/ColumnName.csv";
         File file = new File(filename);
@@ -51,6 +90,54 @@ public class CSVHandler {
             for(String[] ss : list){
                 String column=ss[0];
                 int label =Integer.parseInt(ss[1]);
+                columns.add(new Pair<String, Integer>(column,label));
+            }
+            csvReader.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return columns;
+    }
+
+
+    public static ArrayList<Pair<String,Integer>> loadTrain(){
+        String filename="src/main/resources/ColumnName2.csv";
+        File file = new File(filename);
+        FileReader fReader = null;
+        ArrayList<Pair<String,Integer>> columns= new ArrayList<Pair<String, Integer>>();
+        try {
+            fReader = new FileReader(file);
+            CSVReader csvReader = new CSVReader(fReader);
+            List<String[]> list = csvReader.readAll();
+            for(String[] ss : list){
+                String column=ss[0];
+                int label =Integer.parseInt(ss[1]);
+                int train = Integer.parseInt(ss[2]);
+//                System.out.println(train);
+                if(train==1)continue;
+                columns.add(new Pair<String, Integer>(column,label));
+            }
+            csvReader.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+//        System.out.println(columns.size());
+        return columns;
+    }
+    public static ArrayList<Pair<String,Integer>> loadTest(){
+        String filename="src/main/resources/ColumnName2.csv";
+        File file = new File(filename);
+        FileReader fReader = null;
+        ArrayList<Pair<String,Integer>> columns= new ArrayList<Pair<String, Integer>>();
+        try {
+            fReader = new FileReader(file);
+            CSVReader csvReader = new CSVReader(fReader);
+            List<String[]> list = csvReader.readAll();
+            for(String[] ss : list){
+                String column=ss[0];
+                int label =Integer.parseInt(ss[1]);
+                int train = Integer.parseInt(ss[2]);
+                if(train==0)continue;
                 columns.add(new Pair<String, Integer>(column,label));
             }
             csvReader.close();
@@ -120,6 +207,8 @@ public class CSVHandler {
 
     public static void main(String[] args) throws Exception {
 //        textRegularization();
-        loadDict();
+//        loadDict();
+        trainTestSplit();
+        loadTrain();
     }
 }

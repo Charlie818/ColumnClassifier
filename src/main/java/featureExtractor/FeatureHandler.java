@@ -33,21 +33,25 @@ public class FeatureHandler {
     }
 
     public TreeSet<String> featureExtractor() throws Exception{
-        ArrayList<Pair<String,Integer>> columns=CSVHandler.loadColumns();
+        ArrayList<Pair<String,Integer>> columns=CSVHandler.loadTrain();
+//        ArrayList<Pair<String,Integer>> columns=CSVHandler.loadColumns();
         TreeSet<String> features= new TreeSet<String>();
+        System.out.println(columns.size());
         for(Pair<String,Integer> pair:columns){
             String column = pair.getKey();
             column=column.replaceAll("[A-Z]","_$0");
             column=column.toLowerCase();
             column=column.replaceAll("[0-9]+","_");
-            features.addAll(inferSpace(column));
-            if(column.split("_").length!=1) {
-                for (String s : column.split("_")) {
-                    if (s.length() == 0) continue;
+
+            for (String s : column.split("_|\\.|-")) {
+                if (s.length() == 0) continue;
+                if(inferSpace(s).size()>1)
+                    features.addAll(inferSpace(s));
+                else
                     features.add(s);
-                }
             }
         }
+
         features.comparator();
         return features;
     }
@@ -67,8 +71,12 @@ public class FeatureHandler {
         return vec;
     }
 
-    public static Vector<Feature> getFeature(){
-        ArrayList<Pair<String,Integer>> columns=CSVHandler.loadColumns();
+    public static Vector<Feature> getFeature(boolean train){
+        ArrayList<Pair<String,Integer>> columns = new ArrayList<Pair<String, Integer>>();
+        if(train)
+            columns=CSVHandler.loadTrain();
+        else
+            columns=CSVHandler.loadTest();
         Map<String,Integer> feature2id=CSVHandler.loadFeatures();
         Vector<Feature> features = new Vector<Feature>();
         for(Pair<String,Integer> pair:columns){
@@ -132,10 +140,8 @@ public class FeatureHandler {
 
 
     public static void main(String[] args) throws Exception {
-//        CSVHandler.writeFeatures(FeatureHandler.featureExtractor());
-//        FeatureHandler.getFeature();
         FeatureHandler featureHandler = new FeatureHandler();
-//        featureHandler.inferSpace("androidmessageid");
         CSVHandler.writeFeatures(featureHandler.featureExtractor());
+
     }
 }
