@@ -1,4 +1,0 @@
-classifier/SVM.class
-featureExtractor/CSVHandler.class
-featureExtractor/FeatureHandler.class
-entity/Feature.class
