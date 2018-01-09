@@ -9,6 +9,12 @@
     <version>1.0-SNAPSHOT</version>
 
     <dependencies>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.7</version>
+        </dependency>
+
         <!-- https://mvnrepository.com/artifact/tw.edu.ntu.csie/libsvm -->
         <dependency>
             <groupId>tw.edu.ntu.csie</groupId>
