@@ -4,8 +4,11 @@ import java.util.*;
 
 import au.com.bytecode.opencsv.CSVReader;
 import au.com.bytecode.opencsv.CSVWriter;
+import helper.Helper;
 import javafx.util.Pair;
 import org.apache.commons.lang3.math.NumberUtils;
+
+import static java.lang.Math.log;
 
 /**
  * Created by qiujiarong on 27/12/2017.
@@ -48,6 +51,16 @@ public class Loader {
     }
 
     public static void load(){
+        Map<String,Double> wordCost= new HashMap<String, Double>();
+        ArrayList<String> words= Loader.loadDict();
+        int maxWordLength=0;
+        for(int i=0;i<words.size();i++){
+            String word = words.get(i);
+            wordCost.put(word,log((i+1)*log(words.size())));
+            if(word.length()>maxWordLength)maxWordLength=word.length();
+        }
+        Helper.maxWordLength =maxWordLength;
+        Helper.wordCost =wordCost;
 
         trainingData= new ArrayList<Pair<String, Integer>>();
         testingData= new ArrayList<Pair<String, Integer>>();

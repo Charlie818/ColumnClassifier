@@ -3,35 +3,20 @@ package helper;
 import featureExtractor.Loader;
 import javafx.util.Pair;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import static java.lang.Math.log;
 import static java.lang.Math.max;
 
 public class Helper {
-    private Map<String,Double> wordCost;
-    private int maxWordLength;
+    public static Map<String,Double> wordCost;
+    public static int maxWordLength;
 
-    public Helper(){
-        Map<String,Double> wordCost= new HashMap<String, Double>();
-        ArrayList<String> words= Loader.loadDict();
-        int maxWordLength=0;
-        for(int i=0;i<words.size();i++){
-            String word = words.get(i);
-            wordCost.put(word,log((i+1)*log(words.size())));
-            if(word.length()>maxWordLength)maxWordLength=word.length();
-        }
-        this.maxWordLength=maxWordLength;
-        this.wordCost=wordCost;
 
-    }
 
-    private Pair<Double, Integer> bestMatch(int idx,
-                                            ArrayList<Double> cost,
-                                            String line){
+    private static Pair<Double, Integer> bestMatch(int idx,
+                                                   ArrayList<Double> cost,
+                                                   String line){
         int p=max(0,idx- maxWordLength);
 
         ArrayList<Double> candidates0= new ArrayList<Double>();
@@ -49,7 +34,7 @@ public class Helper {
             String word=line.substring(idx-k-1,idx);
             double first;
             int second=k+1;
-            if(this.wordCost.containsKey(word))
+            if(Helper.wordCost.containsKey(word))
                 first=c + wordCost.get(word);
             else
                 continue;
@@ -60,9 +45,15 @@ public class Helper {
     }
 
 
-    //https://stackoverflow.com/questions/8870261/how-to-split-text-without-spaces-into-list-of-words#
-    public ArrayList<String> splitWords(String line) {
-        System.out.println(line);
+    public static String[] splitWordsBySpecialCharacters(String line){
+        return line.split("[_.\\-]");
+    }
+
+    // https://stackoverflow.com/questions/8870261/how-to-split-text-without-spaces-into-list-of-words#
+    // Input: a nonstop string of consecutive words.
+    // Output: a list of splitted words.
+    public static ArrayList<String> splitWordsByDict(String line) {
+
         ArrayList<Double> cost = new ArrayList<Double>();
         cost.add(0.0);
         for (int i = 1; i < line.length() + 1; i++) {
@@ -80,8 +71,8 @@ public class Helper {
             i -= pair.getValue();
         }
 
-        for (String string : out)
-            System.out.println(string);
         return out;
     }
+
+
 }

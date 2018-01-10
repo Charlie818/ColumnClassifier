@@ -1,9 +1,17 @@
 package featureExtractor;
 
+import au.com.bytecode.opencsv.CSVReader;
+import com.medallia.word2vec.Searcher;
+import com.medallia.word2vec.Word2VecModel;
+import com.medallia.word2vec.util.Common;
 import entity.Feature;
 import helper.Helper;
+import helper.Stemmer;
 import javafx.util.Pair;
 
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.*;
 
 
@@ -11,39 +19,60 @@ import java.util.*;
  * Created by qiujiarong on 28/12/2017.
  */
 public class FeatureHandler {
-    private Helper helper;
 
-    FeatureHandler(){
-        helper = new Helper();
+    public static void generateFeatures(String filePath) throws IOException{
+        CSVReader csvReader = new CSVReader(new FileReader(filePath));
+        List<String[]> instances = csvReader.readAll();
+        String packageName;
+        String tableName;
+        String columnName;
+        for(String[] instance : instances){
+            packageName = instance[0];
+            tableName = instance[1].replaceAll("[0-9]+","");
+            columnName = instance[2].replaceAll("[0-9]+","");
+            System.out.println(packageName+"|"+tableName+"|"+columnName);
+            TreeSet<String> wordList = new TreeSet<String>();
+
+            String[] splits = Helper.splitWordsBySpecialCharacters(columnName);
+            String lastWord = "";
+            for (String split: splits){
+                for(String word: Helper.splitWordsByDict(split)){
+                    wordList.add(new Stemmer().stem(word));
+                    lastWord = new Stemmer().stem(word);
+                }
+
+            }
+            System.out.println("Feat1:"+Arrays.toString(wordList.toArray()));
+            System.out.println("Feat2:"+lastWord);
+            System.out.println("-------");
+//            myTreeSet.toArray(new String[myTreeSet.size()]);
+
+        }
+
 
     }
 
     public TreeSet<String> featureExtractor(){
-        ArrayList<Pair<String,Integer>> trainingData = Loader.trainingData;
+        ArrayList<Pair<String, Integer>> trainingData = Loader.trainingData;
         TreeSet<String> features= new TreeSet<String>();
         for(Pair<String,Integer> pair:trainingData){
             String instance = pair.getKey();
-            instance = instance.replaceAll("[A-Z]","_$0");
-            instance = instance.toLowerCase();
-            instance = instance.replaceAll("[0-9]+","_");
 
-            System.out.println("after:"+instance);
-            System.out.println("-----");
-            System.out.println(Arrays.toString(instance.split("[_.\\-]")));
-            for (String s : instance.split("[_.\\-]")) {
-                if (s.length() == 0) continue;
-                if(helper.splitWords(s).size()>1) {
-                    features.addAll(helper.splitWords(s));
+            System.out.println(instance);
+            instance = instance.replaceAll("[0-9]+","");
+            TreeSet<String> wordList = new TreeSet<String>();
+            for (String split : Helper.splitWordsBySpecialCharacters(instance)){
+                ArrayList<String> furtherSplits = Helper.splitWordsByDict(split);
+                if (furtherSplits.size() == 0){
+                    wordList.add(new Stemmer().stem(split));
+                }
+                for (String furtherSplit: furtherSplits){
+                    wordList.add(new Stemmer().stem(furtherSplit));
+                }
 
-                    System.out.println(helper.splitWords(s));
-                }
-                else{
-                    features.add(s);
-                    System.out.println(s);
-                }
-                System.out.println("features.size():"+features.size());
+
             }
-            System.out.println("*******");
+            System.out.println(Arrays.toString(wordList.toArray()));
 
         }
 
@@ -90,8 +119,20 @@ public class FeatureHandler {
     }
 
 
-    public static void main(String[] args) {
-        Loader.load();
-        Loader.writeFeatures(new FeatureHandler().featureExtractor());
+    public static void main(String[] args) throws IOException{
+        String filename = "src/main/res/word2vec.c.output.model.txt";
+        Word2VecModel word2VecModel = Word2VecModel.fromTextFile(new File(filename));
+        try {
+            System.out.println(word2VecModel.forSearch().cosineDistance("three", "five"));
+        } catch (Searcher.UnknownWordException e) {
+            e.printStackTrace();
+        }
+
+//        Loader.load();
+//        try {
+//            FeatureHandler.generateFeatures("src/main/res/dataset.csv");
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
     }
 }
