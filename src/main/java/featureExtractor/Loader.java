@@ -4,6 +4,7 @@ import java.util.*;
 
 import au.com.bytecode.opencsv.CSVReader;
 import au.com.bytecode.opencsv.CSVWriter;
+import com.medallia.word2vec.Word2VecModel;
 import helper.Helper;
 import javafx.util.Pair;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -17,6 +18,7 @@ public class Loader {
 
     static ArrayList<Pair<String,Integer>> trainingData;
     static ArrayList<Pair<String,Integer>> testingData;
+    static Word2VecModel word2VecModel;
 
     private static void prepareData() throws Exception{
         File file = new File("src/main/res/dataset.csv");
@@ -50,7 +52,12 @@ public class Loader {
         csvWriter.close();
     }
 
-    public static void load(){
+    public static void load() throws IOException{
+
+        String filename = "src/main/res/word2vec.c.output.model.txt";
+        word2VecModel = Word2VecModel.fromTextFile(new File(filename));
+
+
         Map<String,Double> wordCost= new HashMap<String, Double>();
         ArrayList<String> words= Loader.loadDict();
         int maxWordLength=0;
@@ -64,23 +71,20 @@ public class Loader {
 
         trainingData= new ArrayList<Pair<String, Integer>>();
         testingData= new ArrayList<Pair<String, Integer>>();
-        try {
-            CSVReader csvReader = new CSVReader(new FileReader(new File("src/main/res/processed_dataset.csv")));
-            List<String[]> list = csvReader.readAll();
-            for(String[] ss : list){
-                String column=ss[0];
-                int label = NumberUtils.toInt(ss[1], -1);
-                int train = NumberUtils.toInt(ss[2], -1);
-                if(train == 1)
-                    trainingData.add(new Pair<String, Integer>(column,label));
-                else if (train == 0)
-                    testingData.add(new Pair<String, Integer>(column,label));
 
-            }
-            csvReader.close();
-        } catch (Exception e) {
-            e.printStackTrace();
+        CSVReader csvReader = new CSVReader(new FileReader(new File("src/main/res/processed_dataset.csv")));
+        List<String[]> list = csvReader.readAll();
+        for(String[] ss : list){
+            String column=ss[0];
+            int label = NumberUtils.toInt(ss[1], -1);
+            int train = NumberUtils.toInt(ss[2], -1);
+            if(train == 1)
+                trainingData.add(new Pair<String, Integer>(column,label));
+            else if (train == 0)
+                testingData.add(new Pair<String, Integer>(column,label));
         }
+        csvReader.close();
+
 
     }
 
@@ -120,14 +124,14 @@ public class Loader {
     }
 
     public static ArrayList<String> loadDict(){
-        File file = new File("src/main/res/dict_125k.txt");
+        File file = new File("src/main/res/enwiki_vocab_min200.txt");
         ArrayList<String> dict= new ArrayList<String>();
         try {
             FileReader fReader = new FileReader(file);
             BufferedReader bf = new BufferedReader(fReader);
             String line;
             while ((line=bf.readLine()) != null){
-                dict.add(line);
+                dict.add(line.split(" ")[0]);
             }
         } catch (Exception e) {
             e.printStackTrace();

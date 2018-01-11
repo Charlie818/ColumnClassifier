@@ -11,6 +11,7 @@ import libsvm.svm_node;
 import libsvm.svm_parameter;
 import libsvm.svm_problem;
 
+import java.io.IOException;
 import java.util.Vector;
 
 public class SVM {
@@ -87,7 +88,7 @@ public class SVM {
     /**
      * @param args
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException{
         Loader.load();
         SVM(FeatureHandler.getFeature(true),FeatureHandler.getFeature(false));
     }

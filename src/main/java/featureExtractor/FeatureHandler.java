@@ -1,18 +1,18 @@
 package featureExtractor;
 
 import au.com.bytecode.opencsv.CSVReader;
+import com.google.common.collect.ImmutableList;
 import com.medallia.word2vec.Searcher;
-import com.medallia.word2vec.Word2VecModel;
-import com.medallia.word2vec.util.Common;
 import entity.Feature;
 import helper.Helper;
-import helper.Stemmer;
 import javafx.util.Pair;
 
-import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.util.*;
+
+import static featureExtractor.Loader.word2VecModel;
 
 
 /**
@@ -20,12 +20,41 @@ import java.util.*;
  */
 public class FeatureHandler {
 
-    public static void generateFeatures(String filePath) throws IOException{
+
+    private static ArrayList<Double> getWord2VecMean(int vecLength, TreeSet<String> wordList) {
+
+        int n_words = wordList.size();
+
+        ArrayList<Double> word2vec_mean = new ArrayList<Double>(vecLength);
+        for (int i = 0; i < vecLength; i++) {
+            word2vec_mean.add(0.0);
+        }
+
+        for (int i=0; i< vecLength; i++){
+            for (String word: wordList){
+                List<Double> vector;
+                try {
+                    vector = word2VecModel.forSearch().getRawVector(word);
+                } catch (Searcher.UnknownWordException e) {
+                    Double[] x = {0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0};
+                    vector = Arrays.asList(x);
+                    e.printStackTrace();
+                }
+                word2vec_mean.set(i, word2vec_mean.get(i)+ vector.get(i));
+            }
+            word2vec_mean.set(i, word2vec_mean.get(i)/n_words);
+        }
+
+        return word2vec_mean;
+    }
+
+    public static void generateFeatures(String filePath) throws IOException, Searcher.UnknownWordException {
         CSVReader csvReader = new CSVReader(new FileReader(filePath));
         List<String[]> instances = csvReader.readAll();
         String packageName;
         String tableName;
         String columnName;
+        int vecLength = -1;
         for(String[] instance : instances){
             packageName = instance[0];
             tableName = instance[1].replaceAll("[0-9]+","");
@@ -37,13 +66,20 @@ public class FeatureHandler {
             String lastWord = "";
             for (String split: splits){
                 for(String word: Helper.splitWordsByDict(split)){
-                    wordList.add(new Stemmer().stem(word));
-                    lastWord = new Stemmer().stem(word);
+                    wordList.add(word);
+                    lastWord = word;
                 }
 
             }
+
+            if (vecLength ==-1){
+                vecLength = word2VecModel.forSearch().getRawVector(wordList.first()).size();
+            }
+
             System.out.println("Feat1:"+Arrays.toString(wordList.toArray()));
             System.out.println("Feat2:"+lastWord);
+            System.out.println("Feat3:"+Arrays.toString(getWord2VecMean(vecLength, wordList).toArray()) );
+
             System.out.println("-------");
 //            myTreeSet.toArray(new String[myTreeSet.size()]);
 
@@ -52,34 +88,6 @@ public class FeatureHandler {
 
     }
 
-    public TreeSet<String> featureExtractor(){
-        ArrayList<Pair<String, Integer>> trainingData = Loader.trainingData;
-        TreeSet<String> features= new TreeSet<String>();
-        for(Pair<String,Integer> pair:trainingData){
-            String instance = pair.getKey();
-
-            System.out.println(instance);
-            instance = instance.replaceAll("[0-9]+","");
-            TreeSet<String> wordList = new TreeSet<String>();
-            for (String split : Helper.splitWordsBySpecialCharacters(instance)){
-                ArrayList<String> furtherSplits = Helper.splitWordsByDict(split);
-                if (furtherSplits.size() == 0){
-                    wordList.add(new Stemmer().stem(split));
-                }
-                for (String furtherSplit: furtherSplits){
-                    wordList.add(new Stemmer().stem(furtherSplit));
-                }
-
-
-            }
-            System.out.println(Arrays.toString(wordList.toArray()));
-
-        }
-
-        features.comparator();
-
-        return features;
-    }
 
     private static Vector<Double> getFeature(String column,Map<String,Integer> feature2id){
         Vector<Double> vec = new Vector<Double>();
@@ -119,20 +127,16 @@ public class FeatureHandler {
     }
 
 
-    public static void main(String[] args) throws IOException{
-        String filename = "src/main/res/word2vec.c.output.model.txt";
-        Word2VecModel word2VecModel = Word2VecModel.fromTextFile(new File(filename));
-        try {
-            System.out.println(word2VecModel.forSearch().cosineDistance("three", "five"));
-        } catch (Searcher.UnknownWordException e) {
-            e.printStackTrace();
+    public static void main(String[] args) throws IOException {
+
+
+        Loader.load();
+        try{
+            FeatureHandler.generateFeatures("src/main/res/dataset.csv");
+        }
+        catch (Searcher.UnknownWordException exception){
+            System.out.println(exception.getMessage());
         }
 
-//        Loader.load();
-//        try {
-//            FeatureHandler.generateFeatures("src/main/res/dataset.csv");
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
     }
 }
