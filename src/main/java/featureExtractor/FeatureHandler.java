@@ -1,7 +1,6 @@
 package featureExtractor;
 
 import au.com.bytecode.opencsv.CSVReader;
-import com.google.common.collect.ImmutableList;
 import com.medallia.word2vec.Searcher;
 import entity.Feature;
 import helper.Helper;
@@ -9,7 +8,6 @@ import javafx.util.Pair;
 
 import java.io.FileReader;
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.util.*;
 
 import static featureExtractor.Loader.word2VecModel;
@@ -89,7 +87,7 @@ public class FeatureHandler {
             }
 
             System.out.println("Feat4:"+Arrays.toString(getWord2VecMean(vecLength, wordList).toArray()));
-
+            System.out.println("Feat5:"+ Helper.getWordListFromAppDescriptions(packageName));
             System.out.println("-------");
 //            myTreeSet.toArray(new String[myTreeSet.size()]);
 

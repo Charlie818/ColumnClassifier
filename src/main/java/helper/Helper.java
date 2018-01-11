@@ -2,6 +2,9 @@ package helper;
 
 import javafx.util.Pair;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.util.*;
 
 import static java.lang.Math.max;
@@ -70,6 +73,21 @@ public class Helper {
         return out;
     }
 
-    private
+    public static ArrayList<String> getWordListFromAppDescriptions(String packageName){
+        File file = new File("src/main/res/app_descriptions/"+packageName);
+        ArrayList<String> words= new ArrayList<String>();
+        try {
+            FileReader fReader = new FileReader(file);
+            BufferedReader bf = new BufferedReader(fReader);
+            String line;
+            while ((line=bf.readLine()) != null){
+                line = line.replaceAll("[^a-zA-Z ]", "").toLowerCase();
+                words.addAll(Arrays.asList(line.split("\\s+")));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return words;
+    }
 
 }
