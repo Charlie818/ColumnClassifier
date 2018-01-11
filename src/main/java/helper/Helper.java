@@ -1,18 +1,14 @@
 package helper;
 
-import featureExtractor.Loader;
 import javafx.util.Pair;
 
 import java.util.*;
 
-import static java.lang.Math.log;
 import static java.lang.Math.max;
 
 public class Helper {
     public static Map<String,Double> wordCost;
     public static int maxWordLength;
-
-
 
     private static Pair<Double, Integer> bestMatch(int idx,
                                                    ArrayList<Double> cost,
@@ -74,5 +70,6 @@ public class Helper {
         return out;
     }
 
+    private
 
 }

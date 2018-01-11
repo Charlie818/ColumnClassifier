@@ -78,7 +78,17 @@ public class FeatureHandler {
 
             System.out.println("Feat1:"+Arrays.toString(wordList.toArray()));
             System.out.println("Feat2:"+lastWord);
-            System.out.println("Feat3:"+Arrays.toString(getWord2VecMean(vecLength, wordList).toArray()) );
+            System.out.println("Feat3:"+Arrays.toString(getWord2VecMean(vecLength, wordList).toArray()));
+
+            wordList.clear();
+
+            splits = Helper.splitWordsBySpecialCharacters(tableName);
+
+            for (String split: splits){
+                wordList.addAll(Helper.splitWordsByDict(split));
+            }
+
+            System.out.println("Feat4:"+Arrays.toString(getWord2VecMean(vecLength, wordList).toArray()));
 
             System.out.println("-------");
 //            myTreeSet.toArray(new String[myTreeSet.size()]);
