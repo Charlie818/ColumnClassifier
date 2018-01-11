@@ -18,7 +18,6 @@ import static featureExtractor.Loader.word2VecModel;
  */
 public class FeatureHandler {
 
-
     private static ArrayList<Double> getWord2VecMean(int vecLength, TreeSet<String> wordList) {
 
         int n_words = wordList.size();
@@ -86,7 +85,7 @@ public class FeatureHandler {
                 wordList.addAll(Helper.splitWordsByDict(split));
             }
 
-            System.out.println("Feat4:"+Arrays.toString(getWord2VecMean(vecLength, wordList).toArray()));
+            System.out.println("Feat4:"+ Arrays.toString(getWord2VecMean(vecLength, wordList).toArray()));
             System.out.println("Feat5:"+ Helper.getWordListFromAppDescriptions(packageName));
             System.out.println("-------");
 //            myTreeSet.toArray(new String[myTreeSet.size()]);
