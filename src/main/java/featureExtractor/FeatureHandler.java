@@ -2,9 +2,7 @@ package featureExtractor;
 
 import au.com.bytecode.opencsv.CSVReader;
 import com.medallia.word2vec.Searcher;
-import entity.Feature;
 import helper.Helper;
-import javafx.util.Pair;
 
 import java.io.FileReader;
 import java.io.IOException;
@@ -86,51 +84,13 @@ public class FeatureHandler {
             }
 
             System.out.println("Feat4:"+ Arrays.toString(getWord2VecMean(vecLength, wordList).toArray()));
+
+//            myTreeSet.toArray(new String[myTreeSet.size()]);
             System.out.println("Feat5:"+ Helper.getWordListFromAppDescriptions(packageName));
             System.out.println("-------");
-//            myTreeSet.toArray(new String[myTreeSet.size()]);
-
         }
 
 
-    }
-
-
-    private static Vector<Double> getFeature(String column,Map<String,Integer> feature2id){
-        Vector<Double> vec = new Vector<Double>();
-        for(int i=0;i<feature2id.size();i++)
-            vec.add(i,0.0);
-        boolean flag=false;
-        for(String key:feature2id.keySet()){
-            if(!column.contains(key))
-                continue;
-            int idx=feature2id.get(key);
-            flag=true;
-            vec.set(idx,1.0);
-        }
-        if(!flag)System.out.println("unmatched column "+column);
-        return vec;
-    }
-
-    public static Vector<Feature> getFeature(boolean train){
-        ArrayList<Pair<String,Integer>> columns;
-
-        if(train)
-            columns = Loader.trainingData;
-        else
-            columns = Loader.testingData;
-
-        Map<String,Integer> feature2id = Loader.loadFeatures();
-        Vector<Feature> features = new Vector<Feature>();
-
-        for(Pair<String,Integer> pair:columns){
-            features.add(new Feature(getFeature(pair.getKey(),
-                    feature2id),
-                    pair.getValue(),
-                    pair.getKey()));
-        }
-
-        return features;
     }
 
 
